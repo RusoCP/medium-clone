@@ -6,23 +6,31 @@ import {
   Validators,
 } from '@angular/forms';
 import {Store} from '@ngrx/store';
-import {register} from '../../store/actions';
+import {authActions} from '../../store/actions';
 import {RegisterRequestInteface} from '../../types/registerRequest.interface';
 import {RouterLink} from '@angular/router';
-import {selectIsSubmitting} from '../../store/reducers';
-import {AuthStateInterface} from '../../types/auth-state.interface';
+import {selectIsSubmitting, selectValidationErrors} from '../../store/reducers';
 import {CommonModule} from '@angular/common';
-import {AuthService} from '../../services/auth.service';
+import {combineLatest} from 'rxjs';
+import {BackendErrorMessages} from 'src/app/shared/components/backendErrorMessages/backend-error-messages.component';
 
 @Component({
   selector: 'mc-register',
   templateUrl: './register.component.html',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, CommonModule],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    CommonModule,
+    BackendErrorMessages,
+  ],
 })
 export class RegisterComponent implements OnInit {
   form!: FormGroup;
-  isSubmitting$ = this.store.select(selectIsSubmitting);
+  data$ = combineLatest({
+    isSubmitting: this.store.select(selectIsSubmitting),
+    backendErrors: this.store.select(selectValidationErrors),
+  });
 
   constructor(private fb: FormBuilder, private store: Store) {}
 
@@ -39,6 +47,6 @@ export class RegisterComponent implements OnInit {
     const request: RegisterRequestInteface = {
       user: this.form.getRawValue(),
     };
-    this.store.dispatch(register({request}));
+    this.store.dispatch(authActions.register({request}));
   }
 }

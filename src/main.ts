@@ -1,5 +1,4 @@
 import {bootstrapApplication} from '@angular/platform-browser';
-import {provideRouter} from '@angular/router';
 import {AppComponent} from './app/app.component';
 import {appRoutes} from './app/app.routes';
 import {provideState, provideStore} from '@ngrx/store';
@@ -7,6 +6,9 @@ import {provideStoreDevtools} from '@ngrx/store-devtools';
 import {isDevMode} from '@angular/core';
 import {authFetureKey, authReducer} from './app/auth/store/reducers';
 import {provideHttpClient} from '@angular/common/http';
+import {provideRouter} from '@angular/router';
+import {provideEffects} from '@ngrx/effects';
+import * as authEffects from './app/auth/store/effects';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -14,12 +16,14 @@ bootstrapApplication(AppComponent, {
     provideRouter(appRoutes),
     provideStore(),
     provideState(authFetureKey, authReducer),
+    provideEffects(authEffects),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
       autoPause: true,
       trace: false,
       traceLimit: 75,
+      connectInZone: true,
     }),
   ],
 });
