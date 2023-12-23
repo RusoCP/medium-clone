@@ -9,12 +9,16 @@ import {provideHttpClient} from '@angular/common/http';
 import {provideRouter} from '@angular/router';
 import {provideEffects} from '@ngrx/effects';
 import * as authEffects from './app/auth/store/effects';
+import {provideRouterStore, routerReducer} from '@ngrx/router-store';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideHttpClient(),
     provideRouter(appRoutes),
-    provideStore(),
+    provideStore({
+      router: routerReducer,
+    }),
+    provideRouterStore(),
     provideState(authFetureKey, authReducer),
     provideEffects(authEffects),
     provideStoreDevtools({
